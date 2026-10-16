@@ -1,0 +1,512 @@
+{
+	"info": {
+		"_postman_id": "c1f7b822-4214-4eb9-a789-minibankapi01",
+		"name": "Mini Bank Management System API",
+		"description": "Comprehensive Postman Collection for Mini Bank Management System API built with Django REST Framework.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "account_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "destination_account_id",
+			"value": "3",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication & Profile",
+			"item": [
+				{
+					"name": "Register Customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"michael_scot\",\n    \"email\": \"michael@dundermifflin.com\",\n    \"password\": \"Scranton123!\",\n    \"password_confirm\": \"Scranton123!\",\n    \"first_name\": \"Michael\",\n    \"last_name\": \"Scott\",\n    \"phone_number\": \"+15551239999\",\n    \"address\": \"1725 Slough Avenue, Scranton, PA\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register", ""]
+						}
+					}
+				},
+				{
+					"name": "Login Customer (Auto-saves Token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.tokens && jsonData.tokens.access) {",
+									"        pm.collectionVariables.set(\"access_token\", jsonData.tokens.access);",
+									"        console.log(\"Saved access_token to collection variables.\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"john_doe\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login", ""]
+						}
+					}
+				},
+				{
+					"name": "Login Admin (Auto-saves Token)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.tokens && jsonData.tokens.access) {",
+									"        pm.collectionVariables.set(\"access_token\", jsonData.tokens.access);",
+									"        console.log(\"Saved admin access_token to collection variables.\");",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login", ""]
+						}
+					}
+				},
+				{
+					"name": "View Own Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", ""]
+						}
+					}
+				},
+				{
+					"name": "Update Own Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone_number\": \"+15557778888\",\n    \"address\": \"742 Evergreen Terrace, Springfield\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "profile", ""]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Bank Account Management",
+			"item": [
+				{
+					"name": "Create Bank Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account_type\": \"SAVINGS\",\n    \"initial_deposit\": \"1000.00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/accounts/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "accounts", ""]
+						}
+					}
+				},
+				{
+					"name": "List Own Accounts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/accounts/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "accounts", ""]
+						}
+					}
+				},
+				{
+					"name": "View Account Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/accounts/{{account_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "accounts", "{{account_id}}", ""]
+						}
+					}
+				},
+				{
+					"name": "Check Account Balance",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/accounts/{{account_id}}/balance/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "accounts", "{{account_id}}", "balance", ""]
+						}
+					}
+				},
+				{
+					"name": "Download Account Statement (PDF)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/accounts/{{account_id}}/statement/?format=pdf",
+							"host": ["{{base_url}}"],
+							"path": ["api", "accounts", "{{account_id}}", "statement", ""],
+							"query": [
+								{
+									"key": "format",
+									"value": "pdf"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Download Account Statement (CSV)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/accounts/{{account_id}}/statement/?format=csv",
+							"host": ["{{base_url}}"],
+							"path": ["api", "accounts", "{{account_id}}", "statement", ""],
+							"query": [
+								{
+									"key": "format",
+									"value": "csv"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Transactions (Deposit, Withdraw, Transfer)",
+			"item": [
+				{
+					"name": "Deposit Money",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account\": {{account_id}},\n    \"amount\": \"500.00\",\n    \"description\": \"Client freelance payment\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/transactions/deposit/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "transactions", "deposit", ""]
+						}
+					}
+				},
+				{
+					"name": "Withdraw Money",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account\": {{account_id}},\n    \"amount\": \"200.00\",\n    \"description\": \"Weekend cash withdrawal\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/transactions/withdraw/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "transactions", "withdraw", ""]
+						}
+					}
+				},
+				{
+					"name": "Transfer Money",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"from_account\": {{account_id}},\n    \"to_account\": {{destination_account_id}},\n    \"amount\": \"150.00\",\n    \"description\": \"Dinner bill split\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/transactions/transfer/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "transactions", "transfer", ""]
+						}
+					}
+				},
+				{
+					"name": "View Transaction History (Paginated)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/transactions/?page=1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "transactions", ""],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Filter Transactions by Type",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/transactions/?transaction_type=TRANSFER",
+							"host": ["{{base_url}}"],
+							"path": ["api", "transactions", ""],
+							"query": [
+								{
+									"key": "transaction_type",
+									"value": "TRANSFER"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Filter Transactions by Date Range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/transactions/?start_date=2026-01-01&end_date=2026-12-31",
+							"host": ["{{base_url}}"],
+							"path": ["api", "transactions", ""],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2026-01-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2026-12-31"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Admin Management",
+			"item": [
+				{
+					"name": "Admin: View All Customers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/customers/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "customers", ""]
+						}
+					}
+				},
+				{
+					"name": "Admin: View All Bank Accounts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/accounts/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "accounts", ""]
+						}
+					}
+				},
+				{
+					"name": "Admin: View All Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/transactions/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "admin", "transactions", ""]
+						}
+					}
+				}
+			]
+		}
+	]
+}
